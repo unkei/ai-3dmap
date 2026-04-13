@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Maps 3D View Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="panel">
+        <h1>Google Maps 3D View Demo</h1>
+        <p>
+          URL クエリで API キーを渡せます（例:
+          <code>?key=YOUR_API_KEY</code>）。未指定時はプレースホルダーを使用します。
+        </p>
+        <button id="flyTokyo" type="button">東京駅へフライト</button>
+      </header>
+      <div id="map" aria-label="Google Map 3D view"></div>
+    </main>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
