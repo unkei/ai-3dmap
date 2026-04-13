@@ -3,20 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Google Maps 3D View Demo</title>
+    <title>Google Maps JavaScript API | 3D Maps Demo</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app">
       <header class="panel">
-        <h1>Google Maps 3D View Demo</h1>
+        <h1>Maps JavaScript API - 3D Maps</h1>
         <p>
-          URL クエリで API キーを渡せます（例:
-          <code>?key=YOUR_API_KEY</code>）。未指定時はプレースホルダーを使用します。
+          公式ドキュメントの Get Started に合わせ、<code>&lt;gmp-map-3d&gt;</code>
+          を使った 3D マップ表示へ変更しました。
         </p>
-        <button id="flyTokyo" type="button">東京駅へフライト</button>
+        <p class="helper">URL クエリ: <code>?key=YOUR_API_KEY</code></p>
+        <div class="actions">
+          <button id="flyTokyo" type="button">東京駅へ移動</button>
+          <button id="spinMap" type="button">自動回転</button>
+        </div>
       </header>
-      <div id="map" aria-label="Google Map 3D view"></div>
+
+      <gmp-map-3d
+        id="map3d"
+        mode="hybrid"
+        center="35.681236, 139.767125"
+        range="1600"
+        tilt="65"
+        heading="20"
+      ></gmp-map-3d>
     </main>
 
     <script src="app.js" type="module"></script>

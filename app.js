@@ -1,66 +1,67 @@
 const DEFAULT_KEY = 'PASTE_YOUR_GOOGLE_MAPS_API_KEY';
-const TOKYO_STATION = { lat: 35.681236, lng: 139.767125 };
+const TOKYO_CENTER = '35.681236, 139.767125';
 
 const params = new URLSearchParams(window.location.search);
 const apiKey = params.get('key') ?? DEFAULT_KEY;
 
 if (!apiKey || apiKey === DEFAULT_KEY) {
-  showNotice(
-    'API キーが未設定です。URLに ?key=YOUR_API_KEY を付けてアクセスしてください。'
-  );
+  showNotice('API キーが未設定です。URL に ?key=YOUR_API_KEY を付けてアクセスしてください。');
 }
 
-loadGoogleMaps(apiKey)
-  .then(initMap)
+loadMaps3D(apiKey)
+  .then(setupControls)
   .catch((error) => {
     console.error(error);
     showNotice(
-      'Google Maps API の読み込みに失敗しました。APIキーの有効化や請求設定を確認してください。'
+      '3D Maps API の読み込みに失敗しました。Maps JavaScript API の有効化と課金設定をご確認ください。'
     );
   });
 
-function loadGoogleMaps(key) {
+function loadMaps3D(key) {
   return new Promise((resolve, reject) => {
-    const callbackName = `initMap_${Math.random().toString(36).slice(2)}`;
+    const callbackName = `init3d_${Math.random().toString(36).slice(2)}`;
     window[callbackName] = () => {
-      resolve(window.google.maps);
+      resolve();
       delete window[callbackName];
     };
 
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
       key
-    )}&v=weekly&libraries=maps&callback=${callbackName}`;
+    )}&v=beta&libraries=maps3d&callback=${callbackName}`;
     script.async = true;
     script.defer = true;
-    script.onerror = () => reject(new Error('Failed to load Google Maps script'));
+    script.onerror = () => reject(new Error('Failed to load Maps JavaScript API 3D library'));
     document.head.appendChild(script);
   });
 }
 
-function initMap() {
-  const map = new google.maps.Map(document.getElementById('map'), {
-    center: TOKYO_STATION,
-    zoom: 17,
-    heading: 210,
-    tilt: 67.5,
-    mapId: 'DEMO_MAP_ID',
-    mapTypeId: 'satellite'
+function setupControls() {
+  const map3d = document.getElementById('map3d');
+  const flyButton = document.getElementById('flyTokyo');
+  const spinButton = document.getElementById('spinMap');
+
+  flyButton.addEventListener('click', () => {
+    map3d.setAttribute('center', TOKYO_CENTER);
+    map3d.setAttribute('range', '1200');
+    map3d.setAttribute('tilt', '67.5');
+    map3d.setAttribute('heading', '210');
   });
 
-  new google.maps.Marker({
-    map,
-    position: TOKYO_STATION,
-    title: 'Tokyo Station'
-  });
+  let spinTimer;
+  spinButton.addEventListener('click', () => {
+    if (spinTimer) {
+      clearInterval(spinTimer);
+      spinTimer = null;
+      spinButton.textContent = '自動回転';
+      return;
+    }
 
-  document.getElementById('flyTokyo').addEventListener('click', () => {
-    map.moveCamera({
-      center: TOKYO_STATION,
-      zoom: 18,
-      tilt: 67.5,
-      heading: (map.getHeading() + 120) % 360
-    });
+    spinButton.textContent = '停止';
+    spinTimer = setInterval(() => {
+      const currentHeading = Number(map3d.getAttribute('heading') || 0);
+      map3d.setAttribute('heading', String((currentHeading + 1.2) % 360));
+    }, 30);
   });
 }
 
@@ -68,5 +69,5 @@ function showNotice(message) {
   const notice = document.createElement('div');
   notice.className = 'notice';
   notice.textContent = message;
-  document.querySelector('.app').prepend(notice);
+  document.body.prepend(notice);
 }
